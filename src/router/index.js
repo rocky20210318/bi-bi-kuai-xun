@@ -17,6 +17,16 @@ const routes = [
     {
         path: '/',
         redirect: '/home'
+    },
+    {
+        path: '/news',
+        name: 'news',
+        component: () => import('../views/News.vue')
+    },
+    {
+        path: '/news-details',
+        name: 'newsDetails',
+        component: () => import('../views/NewsDetails.vue')
     }
 ]
 

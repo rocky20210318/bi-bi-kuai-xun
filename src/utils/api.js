@@ -10,7 +10,7 @@ const api = {
             let res = await instance.get(url, { params: data })
             res = res.data
             return new Promise((resolve) => {
-                if (res.status === 'SUCCESS') {
+                if (res.status === true) {
                     resolve(res.data)
                 } else {
                     if (!isHideToast) Toast(res.message || res.data)
@@ -26,7 +26,7 @@ const api = {
             let res = await instance.post(url, qs.stringify(data))
             res = res.data
             return new Promise((resolve, reject) => {
-                if (res.status === 'SUCCESS') {
+                if (res.status === true) {
                     resolve(res.data)
                 } else {
                     if (!isHideToast) Toast(res.message || res.data)
