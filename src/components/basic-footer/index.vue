@@ -13,13 +13,13 @@
                 </template>
                 <span>快讯</span>
             </tabbar-item>
-            <tabbar-item to="/bounty-list">
+            <tabbar-item to="/novice">
                 <template #icon="props">
                     <img class="icon-img" :src="props.active ? require('../../assets/icon-home-tab-3-active.png') : require('../../assets/icon-home-tab-3.png')" />
                 </template>
                 <span>入门</span>
             </tabbar-item>
-            <tabbar-item to="/my">
+            <tabbar-item to="/quotation">
                 <template #icon="props">
                     <img class="icon-img" :src="props.active ? require('../../assets/icon-home-tab-4-active.png') : require('../../assets/icon-home-tab-4.png')" />
                 </template>

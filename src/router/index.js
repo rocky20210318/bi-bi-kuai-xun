@@ -27,6 +27,26 @@ const routes = [
         path: '/news-details',
         name: 'newsDetails',
         component: () => import('../views/NewsDetails.vue')
+    },
+    {
+        path: '/novice',
+        name: 'novice',
+        component: () => import('../views/Novice.vue')
+    },
+    {
+        path: '/novice-details',
+        name: 'novice-details',
+        component: () => import('../views/NoviceDetails.vue')
+    },
+    {
+        path: '/quotation',
+        name: 'quotation',
+        component: () => import('../views/Quotation.vue')
+    },
+    {
+        path: '/quotation/:id',
+        name: 'quotationDetails',
+        component: () => import('../views/QuotationDetails.vue')
     }
 ]
 

@@ -1,0 +1,260 @@
+<template>
+    <div id="quotation-details">
+        <van-nav-bar fixed left-arrow @click-left="$router.go('-1')" placeholder :title="id.toUpperCase() " />
+        <div v-if="details" class="header">
+            <van-row type="flex" justify="space-between" align="center" class="top">
+                <div><img :src="details.summary.logo" class="img"></div>
+                <p class="title">{{ details.summary.currency + ' ' + details.summary.fullname }}</p>
+                <p class="unit" @click="unitSwitch()">{{ unitText }}<van-icon size=".1rem" name="exchange" /></p>
+            </van-row>
+            <van-row type="flex" justify="space-between" align="center" class="">
+                <div class="left">
+                    <p class="price">{{ unit + (Number(details.price.price)).toFixed(2) }}</p>
+                    <p :class="['chg', details.price.change >0 ? 'green' : 'red']">{{ details.price.change >0 ? '+' : '-' }}{{(details.price.chg * 100).toFixed(2) }}%</p>
+                </div>
+                <div class="right">
+                    <p class="high">24H最高{{ unit + (Number(details.price.high)).toFixed(2) }}</p>
+                    <p class="low">24H最低{{ unit+ (Number(details.price.low)).toFixed(2) }}</p>
+                </div>
+            </van-row>
+        </div>
+        <van-row type="flex" justify="space-between" align="center" class="tab">
+            <div v-for="item in typeList" :key="item.type" :class="['item', item.type ===  activeType ? 'active' : '']" @click="typeSwitch(item)">{{ item.text }}</div>
+        </van-row>
+        <canvas id="myChart" height="300"></canvas>
+    </div>
+</template>
+
+<script>
+import * as echarts from 'echarts'
+import { format } from '../utils/index'
+
+export default {
+    name: 'quotationDetails',
+    components: {
+    },
+    data () {
+        return {
+            details: null,
+            id: this.$route.params.id,
+            unitText: 'CNY',
+            activeType: 'day',
+            typeList: [
+                {
+                    text: '24H',
+                    type: 'day',
+                    fmt: 'HH:mm'
+                },
+                {
+                    text: '一周',
+                    type: 'week',
+                    fmt: 'YYYY-MM-dd'
+                },
+                {
+                    text: '一月',
+                    type: 'month',
+                    fmt: 'YYYY-MM-dd'
+                },
+                {
+                    text: '一年',
+                    type: 'year',
+                    fmt: 'YYYY-MM-dd'
+                },
+                {
+                    text: '全部',
+                    type: 'all',
+                    fmt: 'YYYY-MM-dd'
+                }
+            ],
+            chartData: null,
+            chart: null
+        }
+    },
+    computed: {
+        unit () {
+            return this.unitText !== 'CNY' ? '$' : '￥'
+        }
+    },
+    async created () {
+        this.details = await this.getDetails(this.unitText)
+        // console.log(this.typeList[0])
+        await this.typeSwitch(this.typeList[0])
+    },
+    async mounted () {
+        await this.typeSwitch(this.typeList[0])
+        this.newChart()
+    },
+    methods: {
+        async getDetails (type) {
+            return await this.$api.get('https://www.ibtctrade.com/api/coindata/currencys_market_poll', {
+                currency: this.id,
+                unit: type
+            })
+        },
+        async unitSwitch () {
+            this.unitText = this.unitText === 'CNY' ? 'USD' : 'CNY'
+            this.details = await this.getDetails(this.unitText)
+        },
+        async getChart (type) {
+            return await this.$api.get('https://www.ibtcchina.com/api/market/currency_price_trend', {
+                currency: this.id,
+                unit: this.unitText,
+                type: type
+            })
+        },
+        async typeSwitch (item) {
+            this.activeType = item.type
+            const data = await this.getChart(this.activeType)
+            this.chartData = data.map(e => {
+                return {
+                    x: format(new Date(e.time * 1000), item.fmt),
+                    y: e.net_price.toFixed(2)
+                }
+            })
+            // console.log(this.chartData)
+        },
+        newChart () {
+            this.chart = echarts.init(
+                document.getElementById('myChart'),
+                null,
+                {
+                    devicePixelRatio: 10,
+                    locale: 'ZH'
+                })
+            const option = {
+                tooltip: {
+                    trigger: 'axis',
+                    axis: {
+                        type: 'line'
+                    }
+                },
+                grid: {
+                    show: false,
+                    left: '5%',
+                    right: '1%',
+                    top: '2%',
+                    bottom: '8%',
+                    backgroundColor: '#eee',
+                    containLabel: false
+                },
+                xAxis: {
+                    data: this.chartData.map(e => e.x),
+                    nameLocation: 'center',
+                    axisLine: {
+                        show: false
+                    },
+                    splitLine: {
+                        show: true
+                    },
+                    axisTick: {
+                        show: false
+                    }
+                },
+                yAxis: {
+                    scale: true,
+                    axisLine: {
+                        show: false
+                    },
+                    axisLabel: {
+                        inside: true
+                    },
+                    position: 'right'
+                },
+                series: {
+                    type: 'line',
+                    data: this.chartData.map(e => {
+                        return {
+                            value: e.y
+                        }
+                    }),
+                    labelLine: {
+                        smooth: true
+                    },
+                    itemStyle: {
+                        opacity: 0
+                    },
+                    lineStyle: {
+                        color: '#1077ec',
+                        width: 1
+                    },
+                    areaStyle: {
+                        color: 'rgba(16, 119, 236, 0.3)'
+                    }
+                }
+            }
+            this.chart.setOption(option)
+        }
+    }
+}
+</script>
+<style lang="scss" scoped>
+#quotation-details {
+    padding: 34px 34px 0;
+    background: #fff;
+    .header {
+        // margin-top: 0.5rem;
+        box-shadow: 0 0.04rem 0.12rem rgb(0 0 0 / 8%);
+        border-radius: 10px;
+        padding: 34px 30px;
+        // height: 200px;
+        background: #fff;
+        .top {
+            line-height: 1;
+            .img {
+                width: 40px;
+            }
+            .title {
+                flex: 1;
+                margin-left: 10px;
+                font-size: 28px;
+                font-weight: 500;
+            }
+            .unit {
+                font-size: 30px;
+                color: #888;
+            }
+        }
+        .price {
+            font-size: 44px;
+            font-weight: 700;
+            color: #333;
+        }
+        .chg {
+            font-size: 24px;
+            &.red {
+                color: #E53535;
+            }
+            &.green {
+                color: #1CAA3C;
+            }
+        }
+        .right {
+            line-height: 1.7;
+            font-size: 28px;
+            color: #888;
+        }
+    }
+    .tab {
+        margin: 40px 0;
+        .item {
+            padding: 4px 20px;
+            // height: 0.24rem;
+            // margin-right: 12px;
+            // line-height: 0.24rem;
+            text-align: center;
+            font-size: 24px;
+            background-color: #f2f6f8;
+            color: #54748F;
+            border-radius: 16px;
+            cursor: pointer;
+        }
+        .active {
+            color: #fff;
+            background: #1077ec;
+        }
+    }
+    #myChart {
+        width: 100%;
+    }
+}
+</style>

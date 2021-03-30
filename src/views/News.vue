@@ -118,7 +118,7 @@ export default {
 <style lang="scss" scoped>
 #news {
     min-height: 100%;
-    background: #fff;
+    background: #f7f8f9;
     // padding: 24px 0;
     .year-month-day {
         display: inline-block;
