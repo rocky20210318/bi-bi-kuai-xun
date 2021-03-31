@@ -7,12 +7,12 @@
                 <p class="title">比特币</p>
                 <p class="text">Bitcoin · BTC</p>
             </router-link>
-            <router-link round class="item" to="/quotation/btc">
+            <router-link round class="item" to="/quotation/ltc">
                 <van-image lazy-load src="https://www.ibtcchina.com/static/images/currency/ltc.png" class="img" />
                 <p class="title">莱特币</p>
                 <p class="text">Litecoin · LTC</p>
             </router-link>
-            <router-link class="item" to="/quotation/btc">
+            <router-link class="item" to="/quotation/eth">
                 <van-image round lazy-load src="https://www.ibtcchina.com/static/images/currency/eth.png" class="img" />
                 <p class="title">以太坊</p>
                 <p class="text">Ethereum · ETH</p>
@@ -33,7 +33,7 @@
                 <van-col span="6">最新价格</van-col>
                 <van-col span="6">市值</van-col>
             </van-row>
-            <van-row type="flex" align="center" v-for="(item, index) in listData" :key="item.currency" class="item" @click="jump()">
+            <van-row type="flex" align="center" v-for="(item, index) in listData" :key="item.currency" class="item" @click="jump(item.currency)">
                 <van-col span="2" class="index">{{ index + 1}}</van-col>
                 <van-col span="10">
                     <van-row type="flex" align="center" class="title-img">
@@ -91,7 +91,9 @@ export default {
                 unit: 'CNY'
             })
         },
-        jump () {},
+        jump (id) {
+            this.$router.push('/quotation/' + id)
+        },
         addChineseUnit (number, decimalDigit) {
             return addChineseUnit()(number, decimalDigit)
         }

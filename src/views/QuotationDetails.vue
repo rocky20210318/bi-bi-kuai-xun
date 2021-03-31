@@ -10,7 +10,7 @@
             <van-row type="flex" justify="space-between" align="center" class="">
                 <div class="left">
                     <p class="price">{{ unit + (Number(details.price.price)).toFixed(2) }}</p>
-                    <p :class="['chg', details.price.change >0 ? 'green' : 'red']">{{ details.price.change >0 ? '+' : '-' }}{{(details.price.chg * 100).toFixed(2) }}%</p>
+                    <p :class="['chg', details.price.change >0 ? 'green' : 'red']">{{ details.price.change > 0 ? '+' : '' }}{{ (details.price.chg * 100).toFixed(2) }}%</p>
                 </div>
                 <div class="right">
                     <p class="high">24H最高{{ unit + (Number(details.price.high)).toFixed(2) }}</p>
@@ -21,7 +21,7 @@
         <van-row type="flex" justify="space-between" align="center" class="tab">
             <div v-for="item in typeList" :key="item.type" :class="['item', item.type ===  activeType ? 'active' : '']" @click="typeSwitch(item)">{{ item.text }}</div>
         </van-row>
-        <canvas id="myChart" height="300"></canvas>
+        <div id="myChart" />
     </div>
 </template>
 
@@ -73,64 +73,16 @@ export default {
     computed: {
         unit () {
             return this.unitText !== 'CNY' ? '$' : '￥'
-        }
-    },
-    async created () {
-        this.details = await this.getDetails(this.unitText)
-        // console.log(this.typeList[0])
-        await this.typeSwitch(this.typeList[0])
-    },
-    async mounted () {
-        await this.typeSwitch(this.typeList[0])
-        this.newChart()
-    },
-    methods: {
-        async getDetails (type) {
-            return await this.$api.get('https://www.ibtctrade.com/api/coindata/currencys_market_poll', {
-                currency: this.id,
-                unit: type
-            })
         },
-        async unitSwitch () {
-            this.unitText = this.unitText === 'CNY' ? 'USD' : 'CNY'
-            this.details = await this.getDetails(this.unitText)
-        },
-        async getChart (type) {
-            return await this.$api.get('https://www.ibtcchina.com/api/market/currency_price_trend', {
-                currency: this.id,
-                unit: this.unitText,
-                type: type
-            })
-        },
-        async typeSwitch (item) {
-            this.activeType = item.type
-            const data = await this.getChart(this.activeType)
-            this.chartData = data.map(e => {
-                return {
-                    x: format(new Date(e.time * 1000), item.fmt),
-                    y: e.net_price.toFixed(2)
-                }
-            })
-            // console.log(this.chartData)
-        },
-        newChart () {
-            this.chart = echarts.init(
-                document.getElementById('myChart'),
-                null,
-                {
-                    devicePixelRatio: 10,
-                    locale: 'ZH'
-                })
-            const option = {
+        option () {
+            return {
                 tooltip: {
                     trigger: 'axis',
-                    axis: {
-                        type: 'line'
-                    }
+                    formatter: `{b}<br/>${this.unit}{c}`
                 },
                 grid: {
                     show: false,
-                    left: '5%',
+                    left: '0',
                     right: '1%',
                     top: '2%',
                     bottom: '8%',
@@ -151,6 +103,7 @@ export default {
                     }
                 },
                 yAxis: {
+                    type: 'value',
                     scale: true,
                     axisLine: {
                         show: false
@@ -162,6 +115,7 @@ export default {
                 },
                 series: {
                     type: 'line',
+                    smooth: true,
                     data: this.chartData.map(e => {
                         return {
                             value: e.y
@@ -182,7 +136,61 @@ export default {
                     }
                 }
             }
-            this.chart.setOption(option)
+        }
+    },
+    async created () {
+        this.details = await this.getDetails(this.unitText)
+        // console.log(this.typeList[0])
+        await this.typeSwitch(this.typeList[0])
+    },
+    async mounted () {
+        await this.typeSwitch(this.typeList[0])
+    },
+    methods: {
+        async getDetails (type) {
+            return await this.$api.get('https://www.ibtctrade.com/api/coindata/currencys_market_poll', {
+                currency: this.id,
+                unit: type
+            })
+        },
+        async unitSwitch () {
+            this.unitText = this.unitText === 'CNY' ? 'USD' : 'CNY'
+            this.details = await this.getDetails(this.unitText)
+            this.setChart()
+        },
+        async getChart (type) {
+            return await this.$api.get('https://www.ibtcchina.com/api/market/currency_price_trend', {
+                currency: this.id,
+                unit: this.unitText,
+                type: type
+            })
+        },
+        async typeSwitch (item) {
+            this.activeType = item.type
+            const data = await this.getChart(this.activeType)
+            this.chartData = data.map(e => {
+                return {
+                    x: format(new Date(e.time * 1000), item.fmt),
+                    y: e.net_price.toFixed(2)
+                }
+            })
+            this.setChart()
+            // console.log(this.chartData)
+        },
+        setChart () {
+            if (this.chart) {
+                this.chart.clear()
+                this.chart.setOption(this.option)
+            } else {
+                this.chart = echarts.init(
+                    document.getElementById('myChart'),
+                    null,
+                    {
+                        devicePixelRatio: 10,
+                        locale: 'ZH'
+                    })
+                this.chart.setOption(this.option)
+            }
         }
     }
 }
@@ -255,6 +263,7 @@ export default {
     }
     #myChart {
         width: 100%;
+        height: 700px;
     }
 }
 </style>

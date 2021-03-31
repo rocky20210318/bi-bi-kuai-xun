@@ -19,6 +19,11 @@ const routes = [
         redirect: '/home'
     },
     {
+        path: '/home',
+        name: 'home',
+        component: () => import('../views/Home.vue')
+    },
+    {
         path: '/news',
         name: 'news',
         component: () => import('../views/News.vue')
@@ -47,6 +52,21 @@ const routes = [
         path: '/quotation/:id',
         name: 'quotationDetails',
         component: () => import('../views/QuotationDetails.vue')
+    },
+    {
+        path: '/column-list',
+        name: 'columnList',
+        component: () => import('../views/ColumnList.vue')
+    },
+    {
+        path: '/column-details/:id',
+        name: 'columnDetails',
+        component: () => import('../views/ColumnDetails.vue')
+    },
+    {
+        path: '/column-news/:id',
+        name: 'columnNews',
+        component: () => import('../views/ColumnNews.vue')
     }
 ]
 

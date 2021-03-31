@@ -92,7 +92,7 @@ export default {
     },
     methods: {
         async getList (id) {
-            const data = await this.$api.get('https://www.ibtctrade.com/api/college86/faq_list', {
+            const data = await this.$api.get('https://www.ibtcchina.com/api/college/faq_list', {
                 category: id,
                 p: 1
             })

@@ -7,11 +7,11 @@
                 </template>
                 <span>首页</span>
             </tabbar-item>
-            <tabbar-item to="/news">
+            <tabbar-item to="/column-list">
                 <template #icon="props">
                     <img class="icon-img" :src="props.active ? require('../../assets/icon-home-tab-2-active.png') : require('../../assets/icon-home-tab-2.png')" />
                 </template>
-                <span>快讯</span>
+                <span>专栏</span>
             </tabbar-item>
             <tabbar-item to="/novice">
                 <template #icon="props">
