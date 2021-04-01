@@ -7,58 +7,54 @@
         <div class="banner"><img src="../assets/banner-1.png" alt=""></div>
         <div v-if="details" class="header">
             <van-row type="flex" justify="space-between" align="center" class="top">
-                <div><img :src="details.summary.logo" class="img"></div>
-                <p class="title">{{ details.summary.currency + ' ' + details.summary.fullname }}</p>
-                <p class="unit" @click="unitSwitch()">{{ unitText }}<van-icon size=".1rem" name="exchange" /></p>
+                <div><img :src="details.logo" class="img"></div>
+                <p class="title">{{ details.currency + ' ' + details.fullname }}</p>
             </van-row>
             <van-row type="flex" justify="space-between" align="center" class="">
                 <div class="left">
-                    <p class="price">{{ unit + (Number(details.price.price)).toFixed(2) }}</p>
-                    <p :class="['chg', details.price.change >0 ? 'green' : 'red']">{{ details.price.change > 0 ? '+' : '' }}{{ (details.price.chg * 100).toFixed(2) }}%</p>
+                    <p class="price">￥{{ (Number(details.price)).toFixed(2) }}</p>
+                    <p :class="['chg', details.change >0 ? 'green' : 'red']">{{ details.change > 0 ? '+' : '' }}{{ (details.chg * 100).toFixed(2) }}%</p>
                 </div>
                 <div class="right">
-                    <p class="high">24H最高{{ unit + (Number(details.price.high)).toFixed(2) }}</p>
-                    <p class="low">24H最低{{ unit+ (Number(details.price.low)).toFixed(2) }}</p>
+                    <p class="high">24H最高￥{{ (Number(details.high)).toFixed(2) }}</p>
+                    <p class="low">24H最低￥{{ (Number(details.low)).toFixed(2) }}</p>
                 </div>
             </van-row>
         </div>
         <van-row type="flex" justify="space-between" align="center" class="quotation-list">
-            <router-link to="" class="item">
-                <p class="title">213</p>
-                <p class="perc">132</p>
-                <p class="up-down">123</p>
-            </router-link>
-            <router-link to="" class="item">
-                <p class="title">213</p>
-                <p class="perc">132</p>
-                <p class="up-down">123</p>
-            </router-link>
-            <router-link to="" class="item">
-                <p class="title">213</p>
-                <p class="perc">132</p>
-                <p class="up-down">123</p>
+            <router-link v-show="index !== 0" v-for="(item, index) in listData" :key="item.currency" to="" class="item">
+                <p class="title">{{ item.currency + '/' + item.fullname_zh }}</p>
+                <p :class="['perc', details.change >0 ? 'green' : 'red']">￥{{ (Number(item.price)).toFixed(2) }}</p>
+                <p :class="['up-down', details.change >0 ? 'green' : 'red']">{{ item.change > 0 ? '+' : '' }}{{ (item.chg * 100).toFixed(2) }}%</p>
             </router-link>
         </van-row>
-        <div class="banner"><router-link to=""><img src="../assets/banner-2.png" alt=""></router-link></div>
+        <div class="banner"><router-link to="/novice"><img src="../assets/banner-2.png" alt=""></router-link></div>
+        <NewsFlash :ifLoad="false" :ifRefresh="false" />
         <basic-footer />
     </div>
 </template>
 
 <script>
+import NewsFlash from '../components/news-flash'
 
 export default {
     name: 'home',
     components: {
+        NewsFlash
     },
     data () {
         return {
-            details: null
+            listData: []
         }
     },
     computed: {
+        details () {
+            return this.listData[0]
+        }
     },
     async created () {
-        this.details = await this.getDetails(this.unitText)
+        // this.details = await this.getDetails(this.unitText)
+        this.listData = await this.getList()
     },
     mounted () {
     },
@@ -66,6 +62,13 @@ export default {
         async getDetails (type) {
             return await this.$api.get('https://www.ibtctrade.com/api/coindata/currencys_market_poll', {
                 currency: 'btc',
+                unit: 'CNY'
+            })
+        },
+        async getList () {
+            return await this.$api.get('https://www.ibtcchina.com/api/market/currency_list?', {
+                size: 4,
+                p: 1,
                 unit: 'CNY'
             })
         }
@@ -98,10 +101,16 @@ export default {
             padding: 20px 0;
             width: 32%;
             box-shadow: 0 6px 16px rgb(0 0 0 / 8%);
+            background: #fff;
+            border-radius: 10px;
             text-align: center;
             line-height: 1.8;
             font-size: 26px;
             color: #333;
+            .title {
+                font-size: 26px;
+                font-weight: 500;
+            }
             .perc {
                 font-size: 36px;
                 font-weight: 500;
@@ -109,10 +118,10 @@ export default {
             .up-down {
                 font-size: 24px;
             }
-            &.red {
+            .red {
                 color: #E53535;
             }
-            &.green {
+            .green {
                 color: #1CAA3C;
             }
         }
@@ -122,6 +131,7 @@ export default {
         box-shadow: 0 0.04rem 0.12rem rgb(0 0 0 / 8%);
         border-radius: 10px;
         padding: 34px 30px;
+        margin: 20px 20px 0;
         // height: 200px;
         background: #fff;
         .top {
