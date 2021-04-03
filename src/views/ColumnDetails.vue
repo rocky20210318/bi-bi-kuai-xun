@@ -1,6 +1,6 @@
 <template>
     <div id="column-details">
-        <van-nav-bar fixed left-arrow @click-left="$router.go('-1')" placeholder title="作家专栏" />
+        <van-nav-bar fixed left-arrow placeholder title="作家专栏" :right-text="!isWatch ? '关注专栏' : '已关注'" @click-left="$router.go('-1')" @click-right="follow" />
         <van-row type="flex" align="top" class="details">
             <van-image round lazy-load :src="details.avatar" class="img" />
             <div class="right">
@@ -34,6 +34,7 @@
 <script>
 import { List } from 'vant'
 import { format } from '../utils/index'
+import AV from 'leancloud-storage'
 
 export default {
     name: 'column-details',
@@ -41,6 +42,7 @@ export default {
         List
     },
     data () {
+        // console.log(AV.User.current())
         return {
             id: this.$route.params.id,
             details: {},
@@ -48,12 +50,15 @@ export default {
             finished: false,
             pageIndex: 0,
             pageSize: 10,
-            listData: []
+            listData: [],
+            userId: AV.User.current() ? AV.User.current().id : null,
+            isWatch: false
         }
     },
     computed: {
     },
     async created () {
+        if (AV.User.current()) this.getIsWatch()
     },
     mounted () {
     },
@@ -78,6 +83,26 @@ export default {
         },
         format (date, fmt) {
             return format(new Date(date), fmt)
+        },
+        async getIsWatch () {
+            let list = []
+            const User = AV.Object.createWithoutData('_User', AV.User.current().id)
+            await User.fetch().then(data => {
+                const userWatchList = data.get('watchList')
+                list = userWatchList.filter(i => i.id === this.id)
+            })
+            this.isWatch = list.length > 0
+        },
+        follow () {
+            if (!AV.User.current()) {
+                this.$router.push('/login')
+                return false
+            }
+            const uesr = AV.Object.createWithoutData('_User', AV.User.current().id)
+            // const Uesr = AV.Object.createWithoutData('_User', this.id)
+            this.isWatch ? uesr.remove('watchList', this.details) : uesr.add('watchList', this.details)
+            uesr.save()
+            this.isWatch = !this.isWatch
         }
     }
 }

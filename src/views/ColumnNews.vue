@@ -13,7 +13,8 @@
 
 <script>
 import { format } from '../utils/index'
-import newsList from '../utils/NewsList.json'
+import AV from 'leancloud-storage'
+// import newsList from '../utils/NewsList.json'
 export default {
     name: 'columnNews',
     components: {
@@ -34,9 +35,22 @@ export default {
     },
     methods: {
         getDetails () {
-            const details = newsList.filter(e => e.id === this.id)
-            this.details = details[0]
-            console.log(this.details)
+            // const details = newsList.filter(e => e.id === this.id)
+            // this.details = details[0]
+            // console.log(this.details)
+            const details = new AV.Query('NewsDetails')
+            details.equalTo('id', this.id)
+            // const details = AV.Object.createWithoutData('NewsDetails', this.id)
+            details.find().then(data => {
+                data.forEach(e => {
+                    this.details = {
+                        ...e.attributes
+                    }
+                })
+                console.log(data[0])
+                // this.details = data[0]
+            })
+            console.log(this.listData)
         },
         format (date, fmt) {
             return format(new Date(date), fmt)

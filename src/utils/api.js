@@ -2,7 +2,7 @@ import axios from 'axios'
 import { Toast } from 'vant'
 const qs = require('qs')
 const instance = axios.create({
-    baseURL: 'http://47.106.209.243:18081'
+    // baseURL: 'http://47.106.209.243:18081'
 })
 const api = {
     async get (url, data, isHideToast = false) {

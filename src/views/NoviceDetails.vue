@@ -72,5 +72,8 @@ export default {
         font-size: 24p;
         color: #808595;
     }
+    .icon {
+        margin: 0 4px 0 30px;
+    }
 }
 </style>

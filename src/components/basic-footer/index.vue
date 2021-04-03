@@ -25,6 +25,12 @@
                 </template>
                 <span>币种</span>
             </tabbar-item>
+            <tabbar-item to="/my">
+                <template #icon="props">
+                    <img style="width: 0.7rem;height: 0.7rem;" class="icon-img" :src="props.active ? require('../../assets/icon-home-tab-5-active.png') : require('../../assets/icon-home-tab-5.png')" />
+                </template>
+                <span>我的</span>
+            </tabbar-item>
         </tabbar>
     </div>
 </template>

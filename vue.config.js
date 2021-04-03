@@ -40,5 +40,18 @@ module.exports = {
             )
         }
         config.plugins = [...config.plugins, ...plugins]
+    },
+    devServer: {
+        historyApiFallback: true,
+        noInfo: true,
+        proxy: {
+            '/api': {
+                target: 'https://wapi.bitkan.com/v2', //API服务器的地址
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/api': ''
+                }
+            }
+        },
     }
 }

@@ -5,13 +5,13 @@
                 v-if="listData.length !== 0 || !finished"
                 v-model="isLoading"
                 :finished="finished"
-                finished-text="没有更多了"
+                finished-text=""
                 @load="onLoad"
                 class="list"
             >
                 <ul v-for="(item, listDataIndex) in listData" :key="item.year + item.monthDay">
                     <li :ref="item.year + item.monthDay">
-                        <Sticky v-if="ifLoad" :container="item.container" offset-top="0.24rem">
+                        <Sticky v-if="ifLoad" :container="item.container" offset-top="60px  ">
                             <div class="year-month-day">
                                 <span class="year">{{ item.year }}</span>
                                 <span class="month-day">{{ item.monthDay }}</span>

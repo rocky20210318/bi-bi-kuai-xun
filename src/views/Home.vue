@@ -5,7 +5,7 @@
             <p class="title">币币快讯</p>
         </van-row>
         <div class="banner"><img src="../assets/banner-1.png" alt=""></div>
-        <div v-if="details" class="header">
+        <router-link to="/quotation/btc" v-if="details" class="header">
             <van-row type="flex" justify="space-between" align="center" class="top">
                 <div><img :src="details.logo" class="img"></div>
                 <p class="title">{{ details.currency + ' ' + details.fullname }}</p>
@@ -20,27 +20,31 @@
                     <p class="low">24H最低￥{{ (Number(details.low)).toFixed(2) }}</p>
                 </div>
             </van-row>
-        </div>
+        </router-link>
         <van-row type="flex" justify="space-between" align="center" class="quotation-list">
-            <router-link v-show="index !== 0" v-for="(item, index) in listData" :key="item.currency" to="" class="item">
+            <router-link v-show="index !== 0" v-for="(item, index) in listData" :key="item.currency" :to="'/quotation/' + item.currency" class="item">
                 <p class="title">{{ item.currency + '/' + item.fullname_zh }}</p>
                 <p :class="['perc', details.change >0 ? 'green' : 'red']">￥{{ (Number(item.price)).toFixed(2) }}</p>
                 <p :class="['up-down', details.change >0 ? 'green' : 'red']">{{ item.change > 0 ? '+' : '' }}{{ (item.chg * 100).toFixed(2) }}%</p>
             </router-link>
         </van-row>
         <div class="banner"><router-link to="/novice"><img src="../assets/banner-2.png" alt=""></router-link></div>
-        <NewsFlash :ifLoad="false" :ifRefresh="false" />
+        <router-link to="/news" class="title">最新快讯<div><van-icon name="arrow" /></div></router-link>
+        <NewsFlash :ifLoad="false" :ifRefresh="false" class="news-flash" />
+        <PrivacyAgreement />
         <basic-footer />
     </div>
 </template>
 
 <script>
 import NewsFlash from '../components/news-flash'
+import PrivacyAgreement from '../components/privacy-agreement'
 
 export default {
     name: 'home',
     components: {
-        NewsFlash
+        NewsFlash,
+        PrivacyAgreement
     },
     data () {
         return {
@@ -127,6 +131,7 @@ export default {
         }
     }
     .header {
+        display: block;
         // margin-top: 0.5rem;
         box-shadow: 0 0.04rem 0.12rem rgb(0 0 0 / 8%);
         border-radius: 10px;
@@ -169,6 +174,33 @@ export default {
             font-size: 28px;
             color: #888;
         }
+    }
+    > .title {
+        position: relative;
+        display: block;
+        // margin-top: 20px;
+        padding: 20px 20px 20px 40px;
+        // background: #fff;
+        font-size: 34px;
+        line-height: 1;
+        &::after {
+            content: ' ';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            height: 50%;
+            width: 6px;
+            margin: auto;
+            background: #1077ec;
+        }
+        div {
+            float: right;
+        }
+    }
+    .news-flash {
+
+        // background: #fff;
     }
 }
 </style>
