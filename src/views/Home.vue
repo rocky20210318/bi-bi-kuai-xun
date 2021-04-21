@@ -32,6 +32,7 @@
         <router-link to="/news" class="title">最新快讯<div><van-icon name="arrow" /></div></router-link>
         <NewsFlash :ifLoad="false" :ifRefresh="false" class="news-flash" />
         <PrivacyAgreement />
+        <p v-if="caseNumber" class="record">{{ caseNumber }}</p>
         <basic-footer />
     </div>
 </template>
@@ -54,6 +55,17 @@ export default {
     computed: {
         details () {
             return this.listData[0]
+        },
+        caseNumber () {
+            const domain = document.domain
+            let text = null
+            switch (domain) {
+            case 'www.kailongzhiweb.top':
+            // case 'localhost':
+                text = '赣ICP备2021002793号-1'
+                break
+            }
+            return text
         }
     },
     async created () {
@@ -81,6 +93,14 @@ export default {
 </script>
 <style lang="scss" scoped>
 #home {
+    .record {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        font-size: 28px;
+        color: #666;
+        margin-bottom: 20px;
+    }
     .log-title {
         padding: 20px 20px;
         .logo {

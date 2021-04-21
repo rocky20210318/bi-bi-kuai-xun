@@ -1,7 +1,6 @@
 <template>
     <div id="app-entrance">
         <router-view/>
-        <p v-if="caseNumber" class="record">{{ caseNumber }}</p>
         <!-- 底部导航 -->
         <basic-footer v-if="$route.meta.isShowBasicFooter" />
     </div>
@@ -18,16 +17,6 @@ export default {
         }
     },
     computed: {
-        caseNumber () {
-            const domain = document.domain
-            let text = null
-            switch (domain) {
-            case 'www.4jyungou.com':
-                text = '陕ICP备20010593号-1'
-                break
-            }
-            return text
-        }
     },
     async created () {
     },
