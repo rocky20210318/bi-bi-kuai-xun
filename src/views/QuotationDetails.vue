@@ -1,11 +1,11 @@
 <template>
     <div id="quotation-details">
-        <van-nav-bar fixed left-arrow @click-left="$router.go('-1')" placeholder :title="id.toUpperCase() " />
+        <van-nav-bar fixed left-arrow @click-left="$router.go('-1')" placeholder :title="$route.query.title" />
         <div v-if="details" class="header">
             <van-row type="flex" justify="space-between" align="center" class="top">
                 <div><img :src="details.summary.logo" class="img"></div>
                 <p class="title">{{ details.summary.currency + ' ' + details.summary.fullname }}</p>
-                <p class="unit" @click="unitSwitch()">{{ unitText }}<van-icon size=".1rem" name="exchange" /></p>
+                <p class="unit">{{ unitText }}<van-icon size=".1rem" name="exchange" /></p>
             </van-row>
             <van-row type="flex" justify="space-between" align="center" class="">
                 <div class="left">
@@ -41,28 +41,28 @@ export default {
             activeType: 'day',
             typeList: [
                 {
-                    text: '24H',
-                    type: 'day',
+                    text: '1分钟',
+                    type: '1',
                     fmt: 'HH:mm'
                 },
                 {
-                    text: '一周',
-                    type: 'week',
+                    text: '5分钟',
+                    type: 3,
                     fmt: 'YYYY-MM-dd'
                 },
                 {
-                    text: '一月',
-                    type: 'month',
+                    text: '15分钟',
+                    type: 5,
                     fmt: 'YYYY-MM-dd'
                 },
                 {
-                    text: '一年',
-                    type: 'year',
+                    text: '30分钟',
+                    type: 6,
                     fmt: 'YYYY-MM-dd'
                 },
                 {
-                    text: '全部',
-                    type: 'all',
+                    text: '1小时',
+                    type: 7,
                     fmt: 'YYYY-MM-dd'
                 }
             ],
@@ -149,7 +149,7 @@ export default {
     methods: {
         async getDetails (type) {
             return await this.$api.get('https://www.ibtctrade.com/api/coindata/currencys_market_poll', {
-                currency: this.id,
+                currency: this.$route.query.title,
                 unit: type
             })
         },
@@ -159,9 +159,8 @@ export default {
             this.setChart()
         },
         async getChart (type) {
-            return await this.$api.get('https://www.ibtcchina.com/api/market/currency_price_trend', {
-                currency: this.id,
-                unit: this.unitText,
+            return await this.$api.get('https://pc.sosob.com/pair/market/kline', {
+                pairId: this.id,
                 type: type
             })
         },
@@ -170,8 +169,8 @@ export default {
             const data = await this.getChart(this.activeType)
             this.chartData = data.map(e => {
                 return {
-                    x: format(new Date(e.time * 1000), item.fmt),
-                    y: e.net_price.toFixed(2)
+                    x: format(new Date(e[0] * 1000), item.fmt),
+                    y: e[2].toFixed(2)
                 }
             })
             this.setChart()

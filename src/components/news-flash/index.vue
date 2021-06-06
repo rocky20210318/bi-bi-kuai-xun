@@ -20,7 +20,7 @@
                         <ol class="listData">
                             <li v-for="(list, listIdex) in item.list" :key="list.id" class="item">
                                 <div @click="jump(listDataIndex, listIdex)">
-                                    <p class="time">{{ list.time }}</p>
+                                    <p class="time">{{ list.timeDateStr }}</p>
                                     <p class="title">{{ list.title }}</p>
                                 </div>
                             </li>
@@ -87,15 +87,17 @@ export default {
             this.isRefreshLoading = false
         },
         async getList (pageIndex) {
-            const listData = await this.$api.get('https://www.bitcoin86.com/api_v2/index.php/api/news/lives_list', {
-                p: pageIndex
+            const listData = await this.$api.get('https://www.coingogo.com/flash/default/list', {
+                type: 2,
+                page: pageIndex
             })
+            console.log(listData)
             return listData
         },
         addlistData (listData) {
             listData.forEach(e => {
                 // console.log(new Date(e.inputtime * 1000))
-                const date = new Date(e.inputtime * 1000)
+                const date = new Date(e.createtime[0] * 1000)
                 e.year = format(date, 'YYYY年')
                 e.monthDay = format(date, 'MM月dd日')
                 e.time = format(date, 'HH:mm')

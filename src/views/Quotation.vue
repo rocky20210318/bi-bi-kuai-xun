@@ -2,17 +2,17 @@
     <div id="quotation">
         <h1 class="title">热门币种</h1>
         <van-row type="flex" justify="space-between" align="center" class="hot">
-            <router-link class="item" to="/quotation/btc">
+            <router-link class="item" to="/quotation/2548?title=BTC">
                 <van-image round lazy-load src="https://www.ibtcchina.com/static/images/currency/btc.png" class="img" />
                 <p class="title">比特币</p>
                 <p class="text">Bitcoin · BTC</p>
             </router-link>
-            <router-link round class="item" to="/quotation/ltc">
+            <router-link round class="item" to="/quotation/2706?title=LTC">
                 <van-image lazy-load src="https://www.ibtcchina.com/static/images/currency/ltc.png" class="img" />
                 <p class="title">莱特币</p>
                 <p class="text">Litecoin · LTC</p>
             </router-link>
-            <router-link class="item" to="/quotation/eth">
+            <router-link class="item" to="/quotation/2549?title=ETH">
                 <van-image round lazy-load src="https://www.ibtcchina.com/static/images/currency/eth.png" class="img" />
                 <p class="title">以太坊</p>
                 <p class="text">Ethereum · ETH</p>
@@ -33,19 +33,19 @@
                 <van-col span="6">最新价格</van-col>
                 <van-col span="6">市值</van-col>
             </van-row>
-            <van-row type="flex" align="center" v-for="(item, index) in listData" :key="item.currency" class="item" @click="jump(item.currency)">
+            <van-row type="flex" align="center" v-for="(item, index) in listData" :key="item.currency" class="item" @click="jump(item)">
                 <van-col span="2" class="index">{{ index + 1}}</van-col>
                 <van-col span="10">
                     <van-row type="flex" align="center" class="title-img">
-                        <van-image round lazy-load :src="item.logo" class="img" />
+                        <van-image round lazy-load :src="item.imageUrl" class="img" />
                         <div>
-                            <p class="title">{{ item.currency }}</p>
-                            <p class="text">{{ item.fullname + ' ' + item.fullname_zh }}</p>
+                            <p class="title">{{ item.name }}</p>
+                            <p class="text">{{ item.cnName }}</p>
                         </div>
                     </van-row>
                 </van-col>
                 <van-col span="6" :class="['price', item.change >0 ? 'green' : 'red']">￥{{ (Number(item.price)).toFixed(2) }}</van-col>
-                <van-col span="6" class="market">{{ addChineseUnit(item.market_value, 2) }}</van-col>
+                <van-col span="6" class="market">{{ addChineseUnit(item.marketCapRate, 2) }}万亿</van-col>
             </van-row>
         </List>
         <basic-footer />
@@ -85,14 +85,15 @@ export default {
             this.isLoading = false
         },
         async getList (pageIndex, pageSize) {
-            return await this.$api.get('https://www.ibtcchina.com/api/market/currency_list?', {
+            const list = await this.$api.get('https://pc.sosob.com/newIndex/market/price/list', {
                 size: pageSize,
-                p: pageIndex,
+                start: pageIndex,
                 unit: 'CNY'
             })
+            return list.list
         },
-        jump (id) {
-            this.$router.push('/quotation/' + id)
+        jump (item) {
+            this.$router.push('/quotation/' + item.pairId + '?title=' + item.name)
         },
         addChineseUnit (number, decimalDigit) {
             return addChineseUnit()(number, decimalDigit)

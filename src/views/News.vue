@@ -1,6 +1,6 @@
 <template>
     <div id="news">
-        <van-nav-bar fixed left-arrow @click-left="$router.go('-1')" placeholder title="快讯" />
+        <van-nav-bar fixed left-arrow @click-left="$router.push('home')" placeholder title="快讯" />
         <NewsFlash />
     </div>
 </template>

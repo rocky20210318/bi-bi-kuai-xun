@@ -7,10 +7,10 @@
             <van-icon class="icon" name="eye-o" />
             <span class="browse">{{ activeNewsDetails.hits }}</span>
         </van-row>
-        <p class="description">{{ activeNewsDetails.description }}</p>
+        <p class="description">{{ activeNewsDetails.content }}</p>
         <van-row type="flex" align="center" class="good-bad">
-            <van-row type="flex" justify="space-between" align="center" class="good item"><span>利好</span><span>{{ activeNewsDetails.up_count }}</span></van-row>
-            <van-row type="flex" justify="space-between" align="center" class="bad item">利空 {{ activeNewsDetails.down_count }}</van-row>
+            <van-row type="flex" justify="space-between" align="center" class="good item"><span>利好</span><span>{{ activeNewsDetails.lihao }}</span></van-row>
+            <van-row type="flex" justify="space-between" align="center" class="bad item">利空 {{ activeNewsDetails.likong }}</van-row>
         </van-row>
         <van-row type="flex" justify="space-between" align="center" class="previous-next">
             <router-link to="/news-details" v-if="previousNewsDetails" class="previous van-ellipsis">上一篇：{{ previousNewsDetails.title }}</router-link>

@@ -10,8 +10,8 @@ const api = {
             let res = await instance.get(url, { params: data })
             res = res.data
             return new Promise((resolve) => {
-                if (res.status === true) {
-                    resolve(res.data)
+                if (res.status === true || res.code === 888 || res.code === 0) {
+                    resolve(res.data || res.list)
                 } else {
                     if (!isHideToast) Toast(res.message || res.data)
                     throw res.message || res.data

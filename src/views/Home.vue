@@ -2,10 +2,10 @@
     <div id="home">
         <van-row type="flex" justify="space-between" align="center" class="log-title">
             <img class="logo" src="../assets/logo.png" alt="">
-            <p class="title">币币快讯</p>
+            <p class="title">币火</p>
         </van-row>
         <div class="banner"><img src="../assets/banner-1.png" alt=""></div>
-        <router-link to="/quotation/btc" v-if="details" class="header">
+        <!-- <router-link to="/quotation/btc" v-if="details" class="header">
             <van-row type="flex" justify="space-between" align="center" class="top">
                 <div><img :src="details.logo" class="img"></div>
                 <p class="title">{{ details.currency + ' ' + details.fullname }}</p>
@@ -20,12 +20,35 @@
                     <p class="low">24H最低￥{{ (Number(details.low)).toFixed(2) }}</p>
                 </div>
             </van-row>
+        </router-link> -->
+        <router-link :to="`/quotation/${details.pairId}?title=${details.name}`" v-if="details" class="header">
+            <van-row type="flex" justify="space-between" align="center" class="top">
+                <div><img :src="details.imageUrl" class="img"></div>
+                <p class="title">{{ details.name + ' ' + details.cnName }}</p>
+            </van-row>
+            <van-row type="flex" justify="space-between" align="center" class="">
+                <div class="left">
+                    <p class="price">￥{{ (Number(details.price)).toFixed(2) }}</p>
+                    <p :class="['chg', details.changePercent > 0 ? 'green' : 'red']">{{ details.changePercent > 0 ? '+' : '' }}{{ (details.changePercent).toFixed(2) }}%</p>
+                </div>
+                <div class="right">
+                    <p class="high">市值占比{{ details.marketCapRate + '%' }}</p>
+                    <p class="low">24H换手率{{ details.handRate + '%' }}</p>
+                </div>
+            </van-row>
         </router-link>
-        <van-row type="flex" justify="space-between" align="center" class="quotation-list">
+        <!-- <van-row type="flex" justify="space-between" align="center" class="quotation-list">
             <router-link v-show="index !== 0" v-for="(item, index) in listData" :key="item.currency" :to="'/quotation/' + item.currency" class="item">
                 <p class="title">{{ item.currency + '/' + item.fullname_zh }}</p>
                 <p :class="['perc', details.change >0 ? 'green' : 'red']">￥{{ (Number(item.price)).toFixed(2) }}</p>
                 <p :class="['up-down', details.change >0 ? 'green' : 'red']">{{ item.change > 0 ? '+' : '' }}{{ (item.chg * 100).toFixed(2) }}%</p>
+            </router-link>
+        </van-row> -->
+        <van-row type="flex" justify="space-between" align="center" class="quotation-list">
+            <router-link v-show="index !== 0" v-for="(item, index) in listData" :key="item.currency" :to="`/quotation/${item.pairId}?title=${item.name}`" class="item">
+                <p class="title">{{ item.name + '/' + item.cnName }}</p>
+                <p :class="['perc', details.change >0 ? 'green' : 'red']">￥{{ (Number(item.price)).toFixed(2) }}</p>
+                <p :class="['up-down', details.changePercent > 0 ? 'green' : 'red']">{{ item.changePercent > 0 ? '+' : '' }}{{ (item.changePercent).toFixed(2) }}%</p>
             </router-link>
         </van-row>
         <div class="banner"><router-link to="/novice"><img src="../assets/banner-2.png" alt=""></router-link></div>
@@ -82,11 +105,13 @@ export default {
             })
         },
         async getList () {
-            return await this.$api.get('https://www.ibtcchina.com/api/market/currency_list?', {
+            const list = await this.$api.get('https://pc.sosob.com/newIndex/market/price/list', {
                 size: 4,
-                p: 1,
+                start: 1,
                 unit: 'CNY'
             })
+            console.log(list)
+            return list.list
         }
     }
 }

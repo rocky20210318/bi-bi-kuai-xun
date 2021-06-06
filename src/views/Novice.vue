@@ -38,9 +38,9 @@
         <basic-footer />
     </div>
 </template>
-
 <script>
 import { Tabs, Tab } from 'vant'
+import AV from 'leancloud-storage'
 
 export default {
     name: 'novice',
@@ -86,18 +86,17 @@ export default {
         this.listData.map(async e => {
             e.list = await this.getList(e.id)
         })
-        console.log(this.listData)
+        // console.log(this.listData)
     },
     mounted () {
     },
     methods: {
         async getList (id) {
-            const data = await this.$api.get('https://www.ibtcchina.com/api/college/faq_list', {
-                category: id,
-                p: 1
-            })
-            if (id === 1) data.shift()
-            return data
+            const list = new AV.Query('FaqList')
+            list.equalTo('category', id)
+            const data = await list.find()
+            // console.log(data)
+            return data.map(i => i.attributes)
         },
         jump (data) {
             localStorage.setItem('noviceDetails', JSON.stringify(data))
