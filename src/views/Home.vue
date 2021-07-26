@@ -2,7 +2,7 @@
     <div id="home">
         <van-row type="flex" justify="space-between" align="center" class="log-title">
             <img class="logo" src="../assets/logo.png" alt="">
-            <p class="title">币火</p>
+            <p class="title">币心</p>
         </van-row>
         <div class="banner"><img src="../assets/banner-1.png" alt=""></div>
         <!-- <router-link to="/quotation/btc" v-if="details" class="header">
